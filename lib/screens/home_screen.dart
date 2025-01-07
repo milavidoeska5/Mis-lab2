@@ -3,6 +3,8 @@ import 'package:lab2_mis/screens/random_joke_screen.dart';
 import '../services/api_services.dart';
 import './joke_list_screen.dart';
 import './favorites_screen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import '../utils/notifications.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -16,6 +18,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     jokeTypes = ApiService.getJokeTypes();
+    requestNotificationPermissions();
+    subscribeToJokeTopic();
+    scheduleDailyNotification();
   }
 
   @override
@@ -46,6 +51,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
             },
+          ),
+          IconButton(
+            icon: Icon(Icons.notifications_active),
+            onPressed: () {
+              // Trigger the test notification
+              showNotification(
+                id: 0,
+                title: "Test Notification",
+                body: "This is a test notification from the AppBar.",
+              );
+            },
+            tooltip: "Test Notification",
           ),
         ],
       ),
@@ -78,5 +95,27 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
+  }
+
+  void requestNotificationPermissions() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print("User granted permission");
+    } else {
+      print("User declined or has not accepted permission");
+    }
+  }
+
+  void subscribeToJokeTopic() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    await messaging.subscribeToTopic("daily_joke");
+    print("Subscribed to daily_joke topic");
   }
 }
