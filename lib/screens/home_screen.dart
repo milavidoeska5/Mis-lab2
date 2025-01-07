@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lab2_mis/screens/random_joke_screen.dart';
 import '../services/api_services.dart';
 import './joke_list_screen.dart';
+import './favorites_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -31,6 +32,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => RandomJokeScreen(joke: randomJoke),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.favorite),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FavoritesScreen(),
                 ),
               );
             },
